@@ -1,0 +1,6 @@
+account-service:
+  image: lingvo-movie/account-service
+  ports:
+     - "8100:8080"
+  links:
+   - discovery
