@@ -1,0 +1,10 @@
+discovery:
+  image: lingvo-movie/discovery
+  ports:
+   - "8761:8761"
+account-service:
+  image: lingvo-movie/account-service
+  ports:
+     - "8100:8080"
+  links:
+   - discovery
