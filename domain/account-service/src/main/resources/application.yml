@@ -1,6 +1,6 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://discovery:8761/eureka/
+      defaultZone: http://${DISCOVERY_HOST:discovery}:8761/eureka/
   instance:
     preferIpAddress: true
