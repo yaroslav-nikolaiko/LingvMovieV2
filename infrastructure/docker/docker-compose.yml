@@ -2,3 +2,9 @@ discovery:
   image: lingvo-movie/discovery
   ports:
    - "8761:8761"
+mysql:
+  image: mysql/mysql-server:5.7.12
+  environment:
+    MYSQL_ROOT_PASSWORD: admin
+  ports:
+   - "33060:3306"
