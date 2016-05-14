@@ -3,6 +3,13 @@ discovery:
   image: lingvo-movie/discovery
   ports:
    - "8761:8761"
+api-gateway:
+  container_name: api-gateway
+  image: lingvo-movie/api-gateway
+  ports:
+   - "80:8080"
+  liks:
+      - discovery
 mysql:
   container_name: mysql
   image: mysql/mysql-server:5.7.12
