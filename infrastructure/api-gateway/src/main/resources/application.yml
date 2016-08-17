@@ -4,3 +4,8 @@ eureka:
       defaultZone: http://${CLUSTER_HOST:discovery}:8761/eureka/
   instance:
     preferIpAddress: true
+
+
+zuul:
+  routes:
+    webapp: /**
