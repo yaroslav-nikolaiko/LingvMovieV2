@@ -12,6 +12,7 @@
     <modules>
         <module>account-service</module>
         <module>dictionary-service</module>
+        <module>webapp</module>
     </modules>
 
     <artifactId>domain</artifactId>
