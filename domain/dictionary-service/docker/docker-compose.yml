@@ -1,0 +1,9 @@
+dictionary-service:
+  container_name: dictionary-service
+  image: lingvo-movie/dictionary-service
+  ports:
+     - "8101:8080"
+  links:
+   - discovery
+   - mysql
+   - account-service
