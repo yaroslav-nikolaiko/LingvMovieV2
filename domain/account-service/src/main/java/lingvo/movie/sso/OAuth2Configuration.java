@@ -25,10 +25,10 @@ public class OAuth2Configuration extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("webapp")
-                .scopes("user")
+                .withClient("any")
+                .scopes("any")
                 .autoApprove(true)
-                .authorities("READ", "WRITE")
+                .authorities("USER", "ADMIN")
                 .authorizedGrantTypes("implicit","refresh_token", "password", "authorization_code");
     }
 

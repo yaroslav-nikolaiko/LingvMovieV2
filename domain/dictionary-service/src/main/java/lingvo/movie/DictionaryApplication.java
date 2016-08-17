@@ -23,7 +23,7 @@ public class DictionaryApplication {
     @RequestMapping(path = "hello")
     public static class HelloWorld{
 
-        @PreAuthorize("hasAuthority('READ')")
+        @PreAuthorize("hasAuthority('USER')")
         @RequestMapping(method = GET)
         public String helloWorld() {
             return "Hello Dictionary Service";
