@@ -20,16 +20,6 @@ public class WebappApplication {
         SpringApplication.run(WebappApplication.class, args);
     }
 
-/*    @RestController
-    @RequestMapping(path = "hello-ui")
-    public static class HelloWorld{
-
-        @RequestMapping(method = GET)
-        public String helloWorld() {
-            return "Hello Webapp Service";
-        }
-    }*/
-
     @Controller
     public static class ViewResolver{
         @RequestMapping(value = {"/users/**", "/posts/**"}, method = RequestMethod.GET)

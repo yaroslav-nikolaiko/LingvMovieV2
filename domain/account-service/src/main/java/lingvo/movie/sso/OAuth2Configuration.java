@@ -26,10 +26,9 @@ public class OAuth2Configuration extends AuthorizationServerConfigurerAdapter {
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("any")
-                .scopes("any")
+                .scopes("trust")
                 .autoApprove(true)
-                .authorities("USER", "ADMIN")
-                .authorizedGrantTypes("implicit","refresh_token", "password", "authorization_code");
+                .authorities("USER", "ADMIN");
     }
 
     @Override

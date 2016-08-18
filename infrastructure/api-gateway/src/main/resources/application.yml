@@ -9,3 +9,4 @@ eureka:
 zuul:
   routes:
     webapp: /**
+  sensitive-headers:
