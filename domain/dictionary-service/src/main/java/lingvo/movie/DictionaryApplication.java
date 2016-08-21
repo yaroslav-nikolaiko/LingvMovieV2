@@ -7,6 +7,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Date;
+
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
@@ -25,8 +29,13 @@ public class DictionaryApplication {
 
         @PreAuthorize("hasAuthority('USER')")
         @RequestMapping(method = GET)
-        public String helloWorld() {
-            return "Hello Dictionary Service";
+        public String helloWorld() throws UnknownHostException {
+            InetAddress ip;
+            String hostname;
+            ip = InetAddress.getLocalHost();
+            hostname = ip.getHostName();
+            return "Dictionary Service Hello Method invoked \n"+
+                    "IP = " + ip + "  HOST = " + hostname + "  DATE=" + new Date();
         }
     }
 }
