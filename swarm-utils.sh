@@ -69,6 +69,7 @@ createGateway(){
         --name api-gateway \
         --replicas 1 \
         --limit-memory ${MEMORY_LIMIT} \
+        --constraint 'node.role == manager' \
         --publish 80:8080 \
         --network ${NETWORK} \
         ${IMAGE_BASE_NAME}/api-gateway
@@ -105,8 +106,12 @@ cleanup(){
     docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
 }
 
-cleanupContainers(){
+cleanupC(){
     docker rm $(docker ps -a --quiet)
+}
+
+login(){
+    docker exec -it $(docker ps --filter name=${1} --quiet) /bin/sh
 }
 
 postProcessor(){
@@ -118,13 +123,19 @@ postProcessor(){
 	    fi
     done
 }
-# Aliases
+
+
+# *************** Aliases **************************
 
 infrastructure(){
     createInfrastructure
 }
 
 all(){
+    createAll
+}
+
+start(){
     createAll
 }
 
