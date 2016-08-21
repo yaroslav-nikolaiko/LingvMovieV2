@@ -1,7 +1,0 @@
-api-gateway:
-  container_name: api-gateway
-  image: lingvo-movie/api-gateway
-  ports:
-   - "80:8080"
-  external_links:
-      - discovery

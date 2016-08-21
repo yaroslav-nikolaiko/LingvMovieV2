@@ -1,8 +1,7 @@
-account-service:
-  container_name: account-service
-  image: lingvo-movie/account-service
-  ports:
-     - "8100:8080"
-  links:
-   - discovery
-   - mysql
+version: '2'
+services:
+  account-service:
+    container_name: account-service
+    image: lingvo-movie/account-service
+    ports:
+       - "8100:8080"

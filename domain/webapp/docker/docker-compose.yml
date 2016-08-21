@@ -1,7 +1,7 @@
-webapp:
-  container_name: webapp
-  image: lingvo-movie/webapp
-  ports:
-     - "8102:8080"
-  links:
-   - discovery
+version: '2'
+services:
+  webapp:
+    container_name: webapp
+    image: lingvo-movie/webapp
+    ports:
+       - "8102:8080"

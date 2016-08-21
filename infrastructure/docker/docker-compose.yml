@@ -1,20 +1,20 @@
-discovery:
-  container_name: discovery
-  image: lingvo-movie/discovery
-  ports:
-   - "8761:8761"
-api-gateway:
-  container_name: api-gateway
-  image: lingvo-movie/api-gateway
-  ports:
-   - "80:8080"
-  links:
-      - discovery
-mysql:
-  container_name: mysql
-  image: mysql/mysql-server:5.7.12
-  environment:
-    MYSQL_ROOT_PASSWORD: admin
-    MYSQL_DATABASE: lingvo-movie
-  ports:
-   - "33060:3306"
+version: '2'
+services:
+  discovery:
+    container_name: discovery
+    image: lingvo-movie/discovery
+    ports:
+     - "8761:8761"
+  api-gateway:
+    container_name: api-gateway
+    image: lingvo-movie/api-gateway
+    ports:
+     - "80:8080"
+  mysql:
+    container_name: mysql
+    image: mysql/mysql-server:5.7.12
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: lingvo-movie
+    ports:
+     - "33060:3306"
