@@ -3,6 +3,7 @@ import {UserFormComponent} from "./user/user.form.component";
 import {CanDeactivateUserForm} from "./utils/can.deacrivate.user.form";
 import {PostsComponent} from "./post/posts.component";
 import {UsersComponent} from "./user/users.component";
+import {LoginComponent} from "./login/login.component";
 
 export const routes: RouterConfig = [
     {
@@ -12,7 +13,8 @@ export const routes: RouterConfig = [
     },
     { path: 'users', component: UsersComponent },
     { path: 'users/:href', component: UserFormComponent, canDeactivate: [CanDeactivateUserForm] },
-    { path: 'posts', component: PostsComponent }
+    { path: 'posts', component: PostsComponent },
+    { path: 'login', component:  LoginComponent}
 ];
 
 

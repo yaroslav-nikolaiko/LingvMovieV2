@@ -6,6 +6,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
@@ -23,7 +25,7 @@ public class AccountServiceApplication {
     public static class HelloWorld{
 
         @RequestMapping(method = GET)
-        public String helloWorld() {
+        public String helloWorld(Principal principal) {
             return "Hello World";
         }
     }
