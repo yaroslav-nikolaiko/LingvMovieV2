@@ -67,5 +67,5 @@ nb-configuration.xml
 
 bower_components/
 node_modules/
-
+compiled/
 *~
