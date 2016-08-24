@@ -39,7 +39,7 @@ export class LoginService{
     hello(){
         let headers = new Headers(this.headers.toJSON());
         var token = JSON.parse(localStorage.getItem("auth_token")).access_token;
-        //headers.append('Authorization', `Bearer ${token}`);
+        headers.append('Authorization', `Bearer ${token}`);
         headers.append('Content-Type', 'application/json');
         this.http.get("api/hello", {headers: headers}
         ).subscribe(
