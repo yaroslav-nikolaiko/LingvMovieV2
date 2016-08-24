@@ -31,6 +31,7 @@ export class LoginComponent implements OnInit{
     loginFacebook(){
         console.log("Login Facebook ....");
         //this.router.navigateByUrl()
+        this.loginService.loginFacebook();
     }
 
     hello(){
