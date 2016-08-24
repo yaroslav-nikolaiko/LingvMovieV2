@@ -14,8 +14,8 @@ export class LoginService{
 
     login(user: any){
         let headers = new Headers(this.headers.toJSON());
-        //user.grant_type = "password";
-        user.grant_type = "authorization_code";
+        user.grant_type = "password";
+        //user.grant_type = "authorization_code";
         headers.append('Authorization', 'Basic '+btoa('any:'));
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         this.http.post("api/oauth/token",
