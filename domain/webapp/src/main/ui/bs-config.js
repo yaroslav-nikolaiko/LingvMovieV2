@@ -8,9 +8,6 @@ module.exports = {
         middleware: {
             1: proxyMiddleware('/api', {
                 target: 'http://localhost:8080',
-                pathRewrite: {
-                    '^/api' : '',     // rewrite path
-                },
                 changeOrigin: true   // for vhosted sites, changes host header to match to target's host
             }),
 

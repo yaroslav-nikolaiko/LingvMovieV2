@@ -1,3 +1,6 @@
+server:
+  context-path: /api/account-service
+
 eureka:
   client:
     serviceUrl:
@@ -45,5 +48,7 @@ spring:
 
 spring:
   profiles: docker
+server:
+  context-path: /
   datasource:
     url: jdbc:mysql://mysql:3306/lingvo-movie

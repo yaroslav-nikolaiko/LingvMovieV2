@@ -18,7 +18,7 @@ export class LoginService{
         //user.grant_type = "authorization_code";
         headers.append('Authorization', 'Basic '+btoa('any:'));
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
-        this.http.post("api/oauth/token",
+        this.http.post("api/account-service/oauth/token",
             this.transformRequest(user),
             {headers: headers}
         ).subscribe(
@@ -29,7 +29,7 @@ export class LoginService{
     loginFacebook(){
         let headers = new Headers(this.headers.toJSON());
         headers.append('X-Requested-With', 'XMLHttpRequest');
-        this.http.get("api/login/facebook",
+        this.http.get("api/account-service/login/facebook",
             {headers: headers}
         ).subscribe(
             response=>{console.log('Success '+response)},
@@ -41,7 +41,7 @@ export class LoginService{
         var token = JSON.parse(localStorage.getItem("auth_token")).access_token;
         headers.append('Authorization', `Bearer ${token}`);
         headers.append('Content-Type', 'application/json');
-        this.http.get("api/hello", {headers: headers}
+        this.http.get("api/account-service/hello", {headers: headers}
         ).subscribe(
             response=>{console.log('Succes '+response)},
             response=>{console.log('Error '+response)});
