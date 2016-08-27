@@ -3,6 +3,7 @@ import {UserService} from "./user.service";
 import {User} from "./user";
 import {CustomUriEncoder} from "../utils/encoder";
 import {ROUTER_DIRECTIVES} from "@angular/router";
+import {CookieUtils} from "../utils/cookie.utils";
 
 @Component({
     selector: 'users',
@@ -19,6 +20,7 @@ export class UsersComponent implements OnInit {
 
     ngOnInit(){
         this.userService.getUsers().subscribe(users=>this.users = users);
+        CookieUtils.saveAuthTokenCookieToLocalStorage();
     }
     
     delete(user: User){

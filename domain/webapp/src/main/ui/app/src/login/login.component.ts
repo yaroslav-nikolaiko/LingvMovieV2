@@ -2,6 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {LoginService} from "./login.service";
 import {Router} from "@angular/router";
+import {CookieUtils} from "../utils/cookie.utils";
 
 
 @Component({
@@ -20,6 +21,7 @@ export class LoginComponent implements OnInit{
 
     ngOnInit() {
         this.form = this.formBuilder.group({});
+        CookieUtils.saveAuthTokenCookieToLocalStorage();
     }
 
     login(){

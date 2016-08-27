@@ -1,7 +1,11 @@
 package lingvo.movie.sso;
 
+import com.fasterxml.jackson.core.Base64Variants;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lingvo.movie.entity.Account;
+import lingvo.movie.security.AccountPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedAuthoritiesExtractor;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
@@ -11,33 +15,41 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.*;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.*;
+import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by yaroslav on 17.08.16.
@@ -46,20 +58,50 @@ import java.util.List;
 @EnableAuthorizationServer
 @EnableOAuth2Client
 public class OAuth2Configuration extends AuthorizationServerConfigurerAdapter {
-
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("any")
                 .scopes("trust")
                 .autoApprove(true)
-                .authorities("USER", "ADMIN")
-                .and();
+                .authorities("USER", "ADMIN");
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.tokenStore(tokenStore()).tokenEnhancer(jwtTokenEnhancer()).authenticationManager(authenticationManager);
+        endpoints.tokenStore(tokenStore())
+                .tokenEnhancer(jwtTokenEnhancer())
+                .authenticationManager(authenticationManager)
+                .tokenGranter(tokenGranter(endpoints));
+    }
+
+    private TokenGranter tokenGranter(final AuthorizationServerEndpointsConfigurer endpoints) {
+        List<TokenGranter> granters = new ArrayList<TokenGranter>(Arrays.asList(endpoints.getTokenGranter()));
+        granters.add(new CustomTokenGranter(endpoints.getTokenServices(),
+                endpoints.getClientDetailsService(),
+                endpoints.getOAuth2RequestFactory(),
+                "custom"));
+        return new CompositeTokenGranter(granters);
+    }
+
+
+    public static class CustomTokenGranter extends AbstractTokenGranter {
+
+        CustomTokenGranter(AuthorizationServerTokenServices tokenServices, ClientDetailsService clientDetailsService,
+                           OAuth2RequestFactory requestFactory, String grantType) {
+            super(tokenServices, clientDetailsService, requestFactory, grantType);
+        }
+
+        protected OAuth2Authentication getOAuth2Authentication(ClientDetails client, TokenRequest tokenRequest) {
+            Map<String, String> params = tokenRequest.getRequestParameters();
+            String username = params.containsKey("username") ? params.get("username") : "guest";
+            List<GrantedAuthority> authorities = params.containsKey("authorities") ? AuthorityUtils
+                    .createAuthorityList(OAuth2Utils.parseParameterList(params.get("authorities")).toArray(new String[0]))
+                    : AuthorityUtils.NO_AUTHORITIES;
+            Authentication user = new UsernamePasswordAuthenticationToken(username, "N/A", authorities);
+            OAuth2Authentication authentication = new OAuth2Authentication(tokenRequest.createOAuth2Request(client), user);
+            return authentication;
+        }
     }
 
     @Autowired
@@ -74,6 +116,22 @@ public class OAuth2Configuration extends AuthorizationServerConfigurerAdapter {
     protected JwtAccessTokenConverter jwtTokenEnhancer() {
         KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(new ClassPathResource("jwt.jks"), "mySecretKey".toCharArray());
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        DefaultAccessTokenConverter tokenConverter = new DefaultAccessTokenConverter();
+        converter.setAccessTokenConverter(tokenConverter);
+
+        tokenConverter.setUserTokenConverter(new DefaultUserAuthenticationConverter(){
+            @Override
+            public Map<String, ?> convertUserAuthentication(Authentication authentication) {
+                Map<String, Object> response = new LinkedHashMap<String, Object>();
+                AccountPrincipal principal = (AccountPrincipal) authentication.getPrincipal();
+                response.put(USERNAME, principal.getUsername());
+                response.put("account", principal.getAccount());
+                if (authentication.getAuthorities() != null && !authentication.getAuthorities().isEmpty()) {
+                    response.put(AUTHORITIES, AuthorityUtils.authorityListToSet(authentication.getAuthorities()));
+                }
+                return response;
+            }
+        });
         converter.setKeyPair(keyStoreKeyFactory.getKeyPair("jwt"));
         return converter;
     }
@@ -121,13 +179,47 @@ public class OAuth2Configuration extends AuthorizationServerConfigurerAdapter {
             return filter;
         }
 
+        @Autowired
+        AuthorizationServerTokenServices tokenServices;
+
+
         private Filter ssoFilter(ClientResources client, String path) {
             OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
                     path);
             OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
             filter.setRestTemplate(template);
-            filter.setTokenServices(new UserInfoTokenServices(
-                    client.getResource().getUserInfoUri(), client.getClient().getClientId()));
+            UserInfoTokenServices tokenServices = new UserInfoTokenServices(
+                    client.getResource().getUserInfoUri(), client.getClient().getClientId()) {
+                @Override
+                protected Object getPrincipal(Map<String, Object> map) {
+                    Account account = new Account();
+                    String name = (String) map.get("name");
+                    account.setName(name);
+                    return new AccountPrincipal(account, name, "", AuthorityUtils.createAuthorityList("USER"));
+                }
+            };
+            tokenServices.setAuthoritiesExtractor(map -> AuthorityUtils.commaSeparatedStringToAuthorityList("USER"));
+            filter.setTokenServices(tokenServices);
+            filter.setAuthenticationSuccessHandler(new AuthenticationSuccessHandler() {
+                @Override
+                public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                    OAuth2Request storedRequest = new OAuth2Request(Collections.singletonMap("grant_type", "custom"),"any", authentication.getAuthorities(), true, Collections.singleton("trust"),null, null, null, null );
+                    OAuth2AccessToken accessToken = SecurityConfiguration.this.tokenServices.createAccessToken(new OAuth2Authentication(storedRequest, authentication));
+
+                    ObjectMapper mapper = new ObjectMapper();
+                    String jsonInStringBase64Encoded = new String(Base64.getEncoder().encode(mapper.writeValueAsBytes(accessToken)));
+
+                    Cookie auth_token = new Cookie("auth_token", jsonInStringBase64Encoded);
+                    auth_token.setMaxAge(5);
+                    auth_token.setPath("/");
+                    response.addCookie(auth_token);
+
+                    String redirectURI = "/";
+                    if(request.getHeader("referer") != null)
+                        redirectURI = request.getHeader("referer");
+                    response.sendRedirect(redirectURI);
+                }
+            });
             return filter;
         }
 

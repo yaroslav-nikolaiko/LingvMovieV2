@@ -1,19 +1,15 @@
 package lingvo.movie.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lingvo.movie.entity.Account;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,14 +41,27 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("user")
-                .password("user")
-                .authorities("USER")
-                .and()
-                .withUser("admin")
-                .password("admin")
-                .authorities("USER", "ADMIN");
+        auth.userDetailsService(new UserDetailsService() {
+            @Override
+            public AccountPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
+                if("admin".equals(username)){
+                    Account account = new Account();
+                    account.setName(username);
+                    account.setEmail("admin@gmail.com");
+                    account.setId(1L);
+
+                    return new AccountPrincipal(account, username, "admin", AuthorityUtils.createAuthorityList("ADMIN", "USER"));
+                }else if("user".equals(username)){
+                    Account account = new Account();
+                    account.setName(username);
+                    account.setEmail("user@gmail.com");
+                    account.setId(1L);
+
+                    return new AccountPrincipal(account, username, "user", AuthorityUtils.createAuthorityList("USER"));
+                }
+                else throw new UsernameNotFoundException("could not find the user '" + username + "'");
+            }
+        });
     }
 
 

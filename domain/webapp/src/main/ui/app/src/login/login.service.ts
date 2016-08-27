@@ -38,12 +38,14 @@ export class LoginService{
 
     hello(){
         let headers = new Headers(this.headers.toJSON());
-        var token = JSON.parse(localStorage.getItem("auth_token")).access_token;
-        headers.append('Authorization', `Bearer ${token}`);
+        if(localStorage.getItem("auth_token")){
+            var token = JSON.parse(localStorage.getItem("auth_token")).access_token;
+            headers.append('Authorization', `Bearer ${token}`);
+        }
         headers.append('Content-Type', 'application/json');
         this.http.get("api/account-service/hello", {headers: headers}
         ).subscribe(
-            response=>{console.log('Succes '+response)},
+            response=>{console.log('Succes '+response.text())},
             response=>{console.log('Error '+response)});
     }
 
