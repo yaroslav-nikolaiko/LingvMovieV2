@@ -1,5 +1,6 @@
 package lingvo.movie.security;
 
+import lingvo.movie.security.client.FacebookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,8 @@ import java.util.List;
 public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private FacebookService facebookService;
 
 
     @Override
@@ -68,9 +71,11 @@ public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdap
 
     private TokenGranter tokenGranter(final AuthorizationServerEndpointsConfigurer endpoints) {
         List<TokenGranter> granters = new ArrayList<>(Arrays.asList(endpoints.getTokenGranter()));
-        granters.add(new FacebookTokenGranter(endpoints.getTokenServices(),
+        FacebookTokenGranter facebookTokenGranter = new FacebookTokenGranter(endpoints.getTokenServices(),
                 endpoints.getClientDetailsService(),
-                endpoints.getOAuth2RequestFactory()));
+                endpoints.getOAuth2RequestFactory());
+        facebookTokenGranter.setFacebookService(facebookService);
+        granters.add(facebookTokenGranter);
         return new CompositeTokenGranter(granters);
     }
 
