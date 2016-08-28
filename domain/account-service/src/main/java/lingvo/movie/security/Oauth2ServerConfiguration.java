@@ -9,11 +9,17 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.CompositeTokenGranter;
+import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by yaroslav on 28.08.16.
@@ -38,7 +44,8 @@ public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdap
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore())
                 .tokenEnhancer(jwtTokenEnhancer())
-                .authenticationManager(authenticationManager);
+                .authenticationManager(authenticationManager)
+                .tokenGranter(tokenGranter(endpoints));
     }
 
     @Bean
@@ -57,6 +64,14 @@ public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdap
         tokenConverter.setUserTokenConverter(new CustomUserTokenConverter());
 
         return converter;
+    }
+
+    private TokenGranter tokenGranter(final AuthorizationServerEndpointsConfigurer endpoints) {
+        List<TokenGranter> granters = new ArrayList<>(Arrays.asList(endpoints.getTokenGranter()));
+        granters.add(new FacebookTokenGranter(endpoints.getTokenServices(),
+                endpoints.getClientDetailsService(),
+                endpoints.getOAuth2RequestFactory()));
+        return new CompositeTokenGranter(granters);
     }
 
 }

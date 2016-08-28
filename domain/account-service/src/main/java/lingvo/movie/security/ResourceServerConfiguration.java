@@ -26,14 +26,9 @@ import javax.servlet.Filter;
 @Configuration
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@EnableOAuth2Client
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
     @Autowired
     TokenStore tokenStore;
-
-    @Autowired
-    @Qualifier("facebookFilter")
-    Filter ssoFilter;
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -43,7 +38,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 //.antMatchers("*//**//**").authenticated()
                 .antMatchers(HttpMethod.GET, "/hello").hasAuthority("USER")
                 .and()
-                .addFilterBefore(ssoFilter, BasicAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //.antMatchers(HttpMethod.POST, "/foo").hasAuthority("FOO_WRITE");
         //you can implement it like this, but I show method invocation security on write
@@ -52,14 +46,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         resources.resourceId("foo").tokenStore(tokenStore);
-    }
-
-    @Bean
-    public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(filter);
-        registration.setOrder(-100);
-        return registration;
     }
 
 }
