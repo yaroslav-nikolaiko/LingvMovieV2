@@ -1,6 +1,6 @@
 package lingvo.movie.security;
 
-import lingvo.movie.entity.Account;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,9 +8,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,6 +16,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    AccountUserDetailsService userDetailsService;
 
     @Override
     @Bean
@@ -43,27 +43,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(new UserDetailsService() {
-            @Override
-            public AccountPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
-                if("admin".equals(username)){
-                    Account account = new Account();
-                    account.setName(username);
-                    account.setEmail("admin@gmail.com");
-                    account.setId(1L);
-
-                    return new AccountPrincipal(account, username, "admin", AuthorityUtils.createAuthorityList("ADMIN", "USER"));
-                }else if("user".equals(username)){
-                    Account account = new Account();
-                    account.setName(username);
-                    account.setEmail("user@gmail.com");
-                    account.setId(1L);
-
-                    return new AccountPrincipal(account, username, "user", AuthorityUtils.createAuthorityList("USER"));
-                }
-                else throw new UsernameNotFoundException("could not find the user '" + username + "'");
-            }
-        });
+        auth.userDetailsService(userDetailsService);
     }
 
 
