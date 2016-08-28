@@ -22,14 +22,14 @@ import java.util.Map;
 /**
  * Created by yaroslav on 28.08.16.
  */
-public class FacebookTokenGranter extends AbstractTokenGranter {
+public class FacebookAccountTokenGranter extends AbstractTokenGranter {
     public static final String GRANT_TYPE="facebook_token";
 
     @Setter
     FacebookService facebookService;
 
-    FacebookTokenGranter(AuthorizationServerTokenServices tokenServices, ClientDetailsService clientDetailsService,
-                       OAuth2RequestFactory requestFactory) {
+    FacebookAccountTokenGranter(AuthorizationServerTokenServices tokenServices, ClientDetailsService clientDetailsService,
+                                OAuth2RequestFactory requestFactory) {
         super(tokenServices, clientDetailsService, requestFactory, GRANT_TYPE);
     }
 

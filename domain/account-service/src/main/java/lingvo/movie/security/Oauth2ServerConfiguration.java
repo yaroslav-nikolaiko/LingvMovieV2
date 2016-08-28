@@ -71,11 +71,11 @@ public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdap
 
     private TokenGranter tokenGranter(final AuthorizationServerEndpointsConfigurer endpoints) {
         List<TokenGranter> granters = new ArrayList<>(Arrays.asList(endpoints.getTokenGranter()));
-        FacebookTokenGranter facebookTokenGranter = new FacebookTokenGranter(endpoints.getTokenServices(),
+        FacebookAccountTokenGranter facebookAccountTokenGranter = new FacebookAccountTokenGranter(endpoints.getTokenServices(),
                 endpoints.getClientDetailsService(),
                 endpoints.getOAuth2RequestFactory());
-        facebookTokenGranter.setFacebookService(facebookService);
-        granters.add(facebookTokenGranter);
+        facebookAccountTokenGranter.setFacebookService(facebookService);
+        granters.add(facebookAccountTokenGranter);
         return new CompositeTokenGranter(granters);
     }
 
