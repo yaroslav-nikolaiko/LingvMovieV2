@@ -12,21 +12,26 @@ import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
+import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
@@ -48,6 +53,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
 
@@ -71,37 +77,7 @@ public class OAuth2Configuration extends AuthorizationServerConfigurerAdapter {
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore())
                 .tokenEnhancer(jwtTokenEnhancer())
-                .authenticationManager(authenticationManager)
-                .tokenGranter(tokenGranter(endpoints));
-    }
-
-    private TokenGranter tokenGranter(final AuthorizationServerEndpointsConfigurer endpoints) {
-        List<TokenGranter> granters = new ArrayList<TokenGranter>(Arrays.asList(endpoints.getTokenGranter()));
-        granters.add(new CustomTokenGranter(endpoints.getTokenServices(),
-                endpoints.getClientDetailsService(),
-                endpoints.getOAuth2RequestFactory(),
-                "custom"));
-        return new CompositeTokenGranter(granters);
-    }
-
-
-    public static class CustomTokenGranter extends AbstractTokenGranter {
-
-        CustomTokenGranter(AuthorizationServerTokenServices tokenServices, ClientDetailsService clientDetailsService,
-                           OAuth2RequestFactory requestFactory, String grantType) {
-            super(tokenServices, clientDetailsService, requestFactory, grantType);
-        }
-
-        protected OAuth2Authentication getOAuth2Authentication(ClientDetails client, TokenRequest tokenRequest) {
-            Map<String, String> params = tokenRequest.getRequestParameters();
-            String username = params.containsKey("username") ? params.get("username") : "guest";
-            List<GrantedAuthority> authorities = params.containsKey("authorities") ? AuthorityUtils
-                    .createAuthorityList(OAuth2Utils.parseParameterList(params.get("authorities")).toArray(new String[0]))
-                    : AuthorityUtils.NO_AUTHORITIES;
-            Authentication user = new UsernamePasswordAuthenticationToken(username, "N/A", authorities);
-            OAuth2Authentication authentication = new OAuth2Authentication(tokenRequest.createOAuth2Request(client), user);
-            return authentication;
-        }
+                .authenticationManager(authenticationManager);
     }
 
     @Autowired
@@ -136,6 +112,13 @@ public class OAuth2Configuration extends AuthorizationServerConfigurerAdapter {
         return converter;
     }
 
+/*    @Bean
+    @Scope("prototype")
+    @Primary
+    OAuth2ClientContext oauth2ClientContext(){
+        return new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest());
+    }*/
+
     @Configuration
     @EnableResourceServer
     @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -149,7 +132,8 @@ public class OAuth2Configuration extends AuthorizationServerConfigurerAdapter {
                     //.antMatchers("*//**//**").authenticated()
                     .antMatchers(HttpMethod.GET, "/hello").hasAuthority("USER")
                     .and()
-                    .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+                    .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class)
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
             //.antMatchers(HttpMethod.POST, "/foo").hasAuthority("FOO_WRITE");
             //you can implement it like this, but I show method invocation security on write
         }

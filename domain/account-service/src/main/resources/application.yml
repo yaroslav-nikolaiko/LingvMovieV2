@@ -1,5 +1,12 @@
 server:
   context-path: /api/account-service
+  port: 8080
+
+lingvo-movie:
+  oauth-client:
+    redirect:
+      host: localhost
+      port: ${server.port}
 
 eureka:
   client:
@@ -17,8 +24,8 @@ facebook:
     tokenName: oauth_token
     authenticationScheme: query
     clientAuthenticationScheme: form
-    #pre-established-redirect-uri: http://localhost:3000/login
-    #registered-redirect-uri: http://localhost:3000/login
+    #pre-established-redirect-uri: http://${lingvo-movie.oauth-client.redirect.host}:${lingvo-movie.oauth-client.redirect.port}/${server.context-path}/login/facebook
+    #registered-redirect-uri: http://${lingvo-movie.oauth-client.redirect.host}:${lingvo-movie.oauth-client.redirect.port}/api/account-service/login/facebook
     #use-current-uri: false
   resource:
     userInfoUri: https://graph.facebook.com/me
@@ -52,3 +59,9 @@ server:
   context-path: /
   datasource:
     url: jdbc:mysql://mysql:3306/lingvo-movie
+
+lingvo-movie:
+  oauth-client:
+    redirect:
+      host: lingvo-movie.con
+      port: 80
