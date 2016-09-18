@@ -71,4 +71,14 @@ public class SecurityTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.access_token", notNullValue()));
     }
+
+    @Test
+    public void passwordGrantFlowBadCredentials() throws Exception {
+        mockMvc.perform(post("/oauth/token")
+                .header("Authorization","Basic "+ new String(encodeBase64("any:".getBytes())))
+                .param("grant_type", "password")
+                .param("username", "admin")
+                .param("password", "wrong_password"))
+                .andExpect(status().isUnauthorized());
+    }
 }
