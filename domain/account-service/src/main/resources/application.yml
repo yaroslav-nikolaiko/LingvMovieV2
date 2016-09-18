@@ -41,7 +41,7 @@ spring:
 
 spring:
   profiles: docker
+  datasource:
+      url: jdbc:mysql://mysql:3306/lingvo-movie
 server:
   context-path: /
-  datasource:
-    url: jdbc:mysql://mysql:3306/lingvo-movie
