@@ -27,6 +27,8 @@
         <!--<jar.finalName>${artifactId}</jar.finalName>-->
         <docker.image.prefix>lingvo-movie</docker.image.prefix>
         <docker.plugin.version>0.4.9</docker.plugin.version>
+
+        <skip.print.properties>true</skip.print.properties>
     </properties>
 
     <dependencies>
@@ -116,6 +118,26 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- This plugin will print all available properties -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skip.print.properties}</skip>
+                            <target>
+                                <property environment="env" />
+                                <echoproperties />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
