@@ -1,7 +1,8 @@
 package lingvo.movie.security;
 
+import lingvo.movie.dao.AccountRepository;
 import lingvo.movie.entity.Account;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -11,23 +12,17 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AccountUserDetailsService implements UserDetailsService {
+    @Autowired
+    AccountRepository accountRepository;
+
     @Override
-    public AccountPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
-        if("admin".equals(username)){
-            Account account = new Account();
-            account.setName(username);
-            account.setEmail("admin@gmail.com");
-            account.setId(1L);
-
-            return new AccountPrincipal(account, username, "admin", AuthorityUtils.createAuthorityList("ADMIN", "USER"));
-        }else if("user".equals(username)){
-            Account account = new Account();
-            account.setName(username);
-            account.setEmail("user@gmail.com");
-            account.setId(1L);
-
-            return new AccountPrincipal(account, username, "user", AuthorityUtils.createAuthorityList("USER"));
+    public Account loadUserByUsername(String username) throws UsernameNotFoundException {
+        Account account = accountRepository.findOneByEmail(username);
+        if(account == null){
+            account = accountRepository.findOneByName(username);
         }
-        else throw new UsernameNotFoundException("could not find the user '" + username + "'");
+        if(account==null)
+            throw new UsernameNotFoundException("Could not find the user '" + username + "'");
+        return account;
     }
 }

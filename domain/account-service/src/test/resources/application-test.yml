@@ -12,3 +12,6 @@ spring:
   data.rest:
       return-body-on-create: true
       return-body-on-update: true
+  jpa:
+      hibernate:
+        ddl-auto: create-drop

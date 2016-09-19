@@ -62,7 +62,7 @@ public class SecurityTest {
     }
 
     @Test
-    public void passwordGrantFlow() throws Exception {
+    public void passwordGrantFlowShouldReturnToken() throws Exception {
         mockMvc.perform(post("/oauth/token")
                 .header("Authorization","Basic "+ new String(encodeBase64("any:".getBytes())))
                 .param("grant_type", "password")

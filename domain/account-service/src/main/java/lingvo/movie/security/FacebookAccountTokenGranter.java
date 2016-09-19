@@ -1,6 +1,7 @@
 package lingvo.movie.security;
 
 import lingvo.movie.entity.Account;
+import lingvo.movie.entity.Authority;
 import lingvo.movie.security.client.FacebookService;
 import lingvo.movie.security.client.FacebookUser;
 import lombok.Setter;
@@ -18,6 +19,8 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
 
 import java.util.List;
 import java.util.Map;
+
+import static lingvo.movie.entity.Authority.createAuthorityList;
 
 /**
  * Created by yaroslav on 28.08.16.
@@ -44,13 +47,10 @@ public class FacebookAccountTokenGranter extends AbstractTokenGranter {
         Account account = new Account();
         account.setId(1L);
         account.setName(facebookUser.getName());
-        List<GrantedAuthority> authorityList = AuthorityUtils.createAuthorityList("USER");
-        AccountPrincipal accountPrincipal = new AccountPrincipal(
-                account,
-                facebookUser.getName(), "",
-                authorityList);
+        List<Authority> authorities = createAuthorityList("USER");
+        account.setAuthorities(authorities);
 
-        Authentication user = new AbstractAuthenticationToken(authorityList) {
+        Authentication user = new AbstractAuthenticationToken(authorities) {
             @Override
             public Object getCredentials() {
                 return null;
@@ -58,7 +58,7 @@ public class FacebookAccountTokenGranter extends AbstractTokenGranter {
 
             @Override
             public Object getPrincipal() {
-                return accountPrincipal;
+                return account;
             }
         };
         return new OAuth2Authentication(tokenRequest.createOAuth2Request(client), user);
