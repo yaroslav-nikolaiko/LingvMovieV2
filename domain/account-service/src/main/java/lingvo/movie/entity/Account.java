@@ -1,5 +1,6 @@
 package lingvo.movie.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,6 +31,7 @@ public class Account implements UserDetails {
 
     @Size(min=3, max=20)
     @Column(nullable = false)
+    @JsonIgnore
     String password;
 
     @Pattern(regexp = "([^.@]+)(\\.[^.@]+)*@([^.@]+\\.)+([^.@]+)", message = "Email is not in valid format")

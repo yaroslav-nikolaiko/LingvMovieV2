@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * Created by yaroslav on 28.08.16.
  */
 @Component
-public class AccountUserDetailsService implements UserDetailsService {
+public class AccountDetailsService implements UserDetailsService {
     @Autowired
     AccountRepository accountRepository;
 

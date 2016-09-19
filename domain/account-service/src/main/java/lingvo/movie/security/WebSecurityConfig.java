@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    AccountUserDetailsService userDetailsService;
+    AccountDetailsService userDetailsService;
 
     @Override
     @Bean
@@ -31,7 +31,9 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .exceptionHandling()
-                .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                .authenticationEntryPoint(
+                        (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+                )
                 .and()
                 .authorizeRequests()
                 .antMatchers("/login**").permitAll()

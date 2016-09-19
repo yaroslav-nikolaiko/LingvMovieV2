@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.CompositeTokenGranter;
 import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
@@ -24,7 +23,6 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +37,8 @@ public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
     @Autowired
     private FacebookService facebookService;
+    @Autowired
+    private AccountDetailsService accountDetailsService;
 
 
     @Override
@@ -79,7 +79,7 @@ public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdap
 
         converter.setAccessTokenConverter(tokenConverter);
         converter.setKeyPair(keyStoreKeyFactory.getKeyPair("jwt"));
-        tokenConverter.setUserTokenConverter(new CustomUserTokenConverter());
+        tokenConverter.setUserTokenConverter(new AccountTokenConverter());
 
         return converter;
     }
