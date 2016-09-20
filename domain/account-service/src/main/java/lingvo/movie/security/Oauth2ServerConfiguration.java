@@ -1,5 +1,6 @@
 package lingvo.movie.security;
 
+import lingvo.movie.dao.AuthorityRepository;
 import lingvo.movie.security.client.FacebookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.oauth2.common.exceptions.ClientAuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -38,6 +40,8 @@ public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdap
     @Autowired
     private FacebookService facebookService;
     @Autowired
+    private AuthorityRepository authorityRepository;
+    @Autowired
     private AccountDetailsService accountDetailsService;
 
 
@@ -61,6 +65,10 @@ public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdap
                     public ResponseEntity<OAuth2Exception> translate(Exception e) throws Exception {
                         if(e instanceof InvalidGrantException)
                             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body((OAuth2Exception) e);
+                        if(e instanceof ClientAuthenticationException){
+                            ClientAuthenticationException authenticationException = (ClientAuthenticationException) e ;
+                            return ResponseEntity.status(authenticationException.getHttpErrorCode()).body((OAuth2Exception) e);
+                        }
                         return super.translate(e);
                     }
                 });
@@ -90,6 +98,7 @@ public class Oauth2ServerConfiguration extends AuthorizationServerConfigurerAdap
                 endpoints.getClientDetailsService(),
                 endpoints.getOAuth2RequestFactory());
         facebookAccountTokenGranter.setFacebookService(facebookService);
+        facebookAccountTokenGranter.setAuthorityRepository(authorityRepository);
         granters.add(facebookAccountTokenGranter);
         return new CompositeTokenGranter(granters);
     }

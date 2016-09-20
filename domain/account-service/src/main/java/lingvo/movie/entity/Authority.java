@@ -32,11 +32,4 @@ public class Authority implements GrantedAuthority{
     public String getAuthority() {
         return role;
     }
-
-    public static List<Authority> createAuthorityList(String... authorities) {
-        List<Authority> result = new ArrayList<>();
-        for (String authority : authorities)
-            result.add(new Authority(authority));
-        return result;
-    }
 }
