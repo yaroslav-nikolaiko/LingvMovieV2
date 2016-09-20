@@ -18,9 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by yaroslav on 21.09.16.
  */
 public class FacebookAuthorizationTest extends AbstractSecurityTest {
-    boolean facebookServiceMockInitialized = false;
+    private boolean facebookServiceMockInitialized = false;
     @MockBean
-    FacebookService facebookService;
+    private FacebookService facebookService;
 
     @Before
     public void initFacebookService(){
