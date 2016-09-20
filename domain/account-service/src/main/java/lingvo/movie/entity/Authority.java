@@ -1,13 +1,12 @@
 package lingvo.movie.entity;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by yaroslav on 19.09.16.
@@ -23,10 +22,6 @@ public class Authority implements GrantedAuthority{
 
     @Column(nullable = false)
     String role;
-
-    public Authority(String role){
-        this.role = role;
-    }
 
     @Override
     public String getAuthority() {
