@@ -1,5 +1,7 @@
 package lingvo.movie.security;
 
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.internal.filter.ValueNode;
 import lingvo.movie.AbstractTest;
 import lingvo.movie.AccountServiceApplication;
 import org.junit.Before;
@@ -14,8 +16,11 @@ import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.Charset;
 
 import static org.apache.tomcat.util.codec.binary.Base64.encodeBase64;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
@@ -48,6 +53,30 @@ public class AbstractSecurityTest extends AbstractTest {
                 .param("grant_type", "password")
                 .param("username", "admin")
                 .param("password", "admin");
+    }
+
+    protected MockHttpServletRequestBuilder tokenRequestUserCred() {
+        return post("/oauth/token")
+                .header("Authorization", "Basic " + new String(encodeBase64("any:".getBytes())))
+                .param("grant_type", "password")
+                .param("username", "user")
+                .param("password", "user");
+    }
+
+    protected String getTokenAdmin() throws Exception {
+        String response = mockMvc.perform(tokenRequestAdminCred())
+                .andReturn()
+                .getResponse().getContentAsString();
+        Object token = JsonPath.compile("$.access_token").read(response);
+        return token.toString();
+    }
+
+    protected String getTokenUser() throws Exception {
+        String response = mockMvc.perform(tokenRequestUserCred())
+                .andReturn()
+                .getResponse().getContentAsString();
+        Object token = JsonPath.compile("$.access_token").read(response);
+        return token.toString();
     }
 
 }
