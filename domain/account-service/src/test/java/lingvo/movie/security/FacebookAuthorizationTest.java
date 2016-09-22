@@ -3,13 +3,19 @@ package lingvo.movie.security;
 import lingvo.movie.security.client.FacebookService;
 import lingvo.movie.security.client.FacebookUser;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.Map;
+
 import static lingvo.movie.utils.SimpleMatcher.matcher;
 import static org.apache.tomcat.util.codec.binary.Base64.encodeBase64;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,12 +47,7 @@ public class FacebookAuthorizationTest extends AbstractSecurityTest {
                 .param("accessToken", "facebook_token_value")
                 .param("userID", "123456"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.access_token", notNullValue()))
-                .andExpect(jsonPath("$.access_token", matcher(item -> {
-                    Object name = tokenStore.readAccessToken(item.toString()).getAdditionalInformation()
-                            .get("user_name");
-                    return "FacebookUserName".equals(name);
-                })));
+                .andExpect(jsonPath("$.access_token", notNullValue()));
     }
 
     @Test
@@ -57,5 +58,71 @@ public class FacebookAuthorizationTest extends AbstractSecurityTest {
                 .param("accessToken", "facebook_token_value")
                 .param("userID", "WRONG USER ID"))
                 .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
+    @Ignore
+    public void tokenShouldContainUserName() throws Exception {
+        mockMvc.perform(post("/oauth/token")
+                .header("Authorization", "Basic " + new String(encodeBase64("any:".getBytes())))
+                .param("grant_type", "facebook_token")
+                .param("accessToken", "facebook_token_value")
+                .param("userID", "123456"))
+                .andExpect(jsonPath("$.access_token", matcher(item -> {
+                    Object name = tokenStore.readAccessToken(item.toString()).getAdditionalInformation()
+                            .get("user_name");
+                    return "FacebookUserName".equals(name);
+                })));
+    }
+
+    @Test
+    @Ignore
+    public void tokenShouldContainId() throws Exception {
+        mockMvc.perform(post("/oauth/token")
+                .header("Authorization", "Basic " + new String(encodeBase64("any:".getBytes())))
+                .param("grant_type", "facebook_token")
+                .param("accessToken", "facebook_token_value")
+                .param("userID", "123456"))
+                .andExpect(jsonPath("$.access_token", matcher(item -> {
+                    Object id = tokenStore.readAccessToken(item.toString()).getAdditionalInformation()
+                            .get("id");
+                    return "1".equals(id);
+                })));
+    }
+
+    @Test
+    @Ignore
+    public void tokenShouldContainAccountObjectMap() throws Exception {
+        mockMvc.perform(post("/oauth/token")
+                .header("Authorization", "Basic " + new String(encodeBase64("any:".getBytes())))
+                .param("grant_type", "facebook_token")
+                .param("accessToken", "facebook_token_value")
+                .param("userID", "123456"))
+                .andExpect(jsonPath("$.access_token", matcher(item -> {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> accountMap = (Map<String, Object>)tokenStore.readAccessToken(item.toString()).getAdditionalInformation()
+                            .get("account");
+                    assertEquals("admin",accountMap.get("name"));
+                    assertEquals("admin@gmail.com",accountMap.get("email"));
+                    return true;
+                })));
+    }
+
+    @Test
+    @Ignore
+    public void tokenShouldNotContainPassword() throws Exception {
+        mockMvc.perform(post("/oauth/token")
+                .header("Authorization", "Basic " + new String(encodeBase64("any:".getBytes())))
+                .param("grant_type", "facebook_token")
+                .param("accessToken", "facebook_token_value")
+                .param("userID", "123456"))
+                .andExpect(jsonPath("$.access_token", matcher(item -> {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> accountMap = (Map<String, Object>)tokenStore.readAccessToken(item.toString()).getAdditionalInformation()
+                            .get("account");
+                    assertNull(accountMap.get("password"));
+                    return true;
+                })));
     }
 }

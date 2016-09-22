@@ -1,5 +1,6 @@
 package lingvo.movie.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,6 +19,7 @@ import java.util.List;
 @Table(name = "ACCOUNT")
 @Data
 @ToString(of = {"name", "email"}) @EqualsAndHashCode(of = {"name", "email"})
+@JsonAutoDetect(fieldVisibility= JsonAutoDetect.Visibility.ANY, getterVisibility= JsonAutoDetect.Visibility.NONE, isGetterVisibility= JsonAutoDetect.Visibility.NONE, setterVisibility= JsonAutoDetect.Visibility.NONE)
 public class Account implements UserDetails {
     @Id
     @GeneratedValue

@@ -54,6 +54,17 @@ public class PasswordGrantFlowTest extends AbstractSecurityTest {
     }
 
     @Test
+    public void tokenShouldContainId() throws Exception {
+        mockMvc.perform(tokenRequestAdminCred())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.access_token", matcher(item -> {
+                    Number id = (Number) tokenStore.readAccessToken(item.toString()).getAdditionalInformation()
+                            .get("id");
+                    return id.longValue() == 1L;
+                })));
+    }
+
+    @Test
     public void tokenShouldContainAccountObjectMap() throws Exception {
         mockMvc.perform(tokenRequestAdminCred())
                 .andExpect(status().isOk())
