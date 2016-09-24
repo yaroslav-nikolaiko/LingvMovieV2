@@ -4,16 +4,22 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.internal.filter.ValueNode;
 import lingvo.movie.AbstractTest;
 import lingvo.movie.AccountServiceApplication;
+import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import static org.apache.tomcat.util.codec.binary.Base64.encodeBase64;
 import static org.hamcrest.Matchers.notNullValue;
@@ -40,6 +46,18 @@ public class AbstractSecurityTest extends AbstractTest {
 
     protected MockMvc mockMvc;
 
+    protected HttpMessageConverter mappingJackson2HttpMessageConverter;
+
+    @Autowired
+    void setConverters(HttpMessageConverter<?>[] converters) {
+
+        this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
+                hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
+
+        Assert.assertNotNull("the JSON message converter must not be null",
+                this.mappingJackson2HttpMessageConverter);
+    }
+
     @Before
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext)
@@ -47,36 +65,43 @@ public class AbstractSecurityTest extends AbstractTest {
                 .build();
     }
 
-    protected MockHttpServletRequestBuilder tokenRequestAdminCred() {
+    protected MockHttpServletRequestBuilder tokenRequest(String username) {
         return post("/oauth/token")
                 .header("Authorization", "Basic " + new String(encodeBase64("any:".getBytes())))
                 .param("grant_type", "password")
-                .param("username", "admin")
-                .param("password", "admin");
+                .param("username", username)
+                .param("password", username);
+    }
+
+    protected MockHttpServletRequestBuilder tokenRequestAdminCred() {
+        return tokenRequest("admin");
     }
 
     protected MockHttpServletRequestBuilder tokenRequestUserCred() {
-        return post("/oauth/token")
-                .header("Authorization", "Basic " + new String(encodeBase64("any:".getBytes())))
-                .param("grant_type", "password")
-                .param("username", "user")
-                .param("password", "user");
+        return tokenRequest("user");
+    }
+
+    protected String getToken(String username) throws Exception {
+        String response = mockMvc.perform(tokenRequest(username))
+                .andReturn()
+                .getResponse().getContentAsString();
+        Object token = JsonPath.compile("$.access_token").read(response);
+        return token.toString();
     }
 
     protected String getTokenAdmin() throws Exception {
-        String response = mockMvc.perform(tokenRequestAdminCred())
-                .andReturn()
-                .getResponse().getContentAsString();
-        Object token = JsonPath.compile("$.access_token").read(response);
-        return token.toString();
+        return getToken("admin");
     }
 
     protected String getTokenUser() throws Exception {
-        String response = mockMvc.perform(tokenRequestUserCred())
-                .andReturn()
-                .getResponse().getContentAsString();
-        Object token = JsonPath.compile("$.access_token").read(response);
-        return token.toString();
+        return getToken("user");
+    }
+
+    String json(Object o) throws IOException {
+        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+        this.mappingJackson2HttpMessageConverter.write(
+                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+        return mockHttpOutputMessage.getBodyAsString();
     }
 
 }

@@ -13,10 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @NoRepositoryBean
 public interface SecureCrudRepository <T> extends CrudRepository<T, Long> {
-    @Override @PreAuthorize("authenticated " +
-            "and principal?.id==#id " +
+    @Override @PreAuthorize("#entity.id==null " +
             "or hasAuthority('ADMIN') " +
-            "or entity.id==null")
+            "or authenticated and principal?.id==#id ")
     <S extends T> S save(S entity);
     @Override
     <S extends T> Iterable<S> save(Iterable<S> entities);
