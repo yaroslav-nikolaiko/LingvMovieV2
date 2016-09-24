@@ -9,8 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by yaroslav on 28.08.16.
@@ -36,6 +35,7 @@ public class AccountTokenConverter extends DefaultUserAuthenticationConverter {
     public Authentication extractAuthentication(Map<String, ?> map) {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.convertValue(map.get("account"), Account.class);
-        return new UsernamePasswordAuthenticationToken(account, "N/A", account.getAuthorities());
+        String[] authorities =  ((List<String>)map.get("authorities")).stream().toArray(String[]::new);
+        return new UsernamePasswordAuthenticationToken(account, "N/A", AuthorityUtils.createAuthorityList(authorities));
     }
 }

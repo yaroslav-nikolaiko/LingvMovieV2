@@ -9,17 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import static lingvo.movie.utils.SimpleMatcher.matcher;
-import static org.apache.tomcat.util.codec.binary.Base64.encodeBase64;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Created by yaroslav on 22.09.16.
@@ -117,32 +113,74 @@ public class AccountEndpointTest extends AbstractSecurityTest {
 
     @Test
     public void userCanUpdateOwnAccount() throws Exception {
+        DocumentContext user = getAccount(userID, "user").put("$", "email", "updated@email.com");
+        String link = user.read("$._links.self.href").toString();
 
+        mockMvc.perform(patch(link)
+                .header("Authorization", "Bearer " + getTokenUser())
+                .content(user.jsonString()))
+                .andExpect(status().isOk());
+
+        Account updatedUser = accountRepository.findOneByName("user");
+        assertEquals("Name does not match", "user", updatedUser.getName());
+        assertEquals("Password does not match", "user", updatedUser.getPassword());
+        assertEquals("updated@email.com", updatedUser.getEmail());
     }
 
     @Test
     public void userForbiddenUpdateAnotherAccount() throws Exception {
+        DocumentContext admin = getAccount(adminID, "admin").put("$", "email", "updated@email.com");
+        String link = admin.read("$._links.self.href").toString();
 
+        mockMvc.perform(patch(link)
+                .header("Authorization", "Bearer " + getTokenUser())
+                .content(admin.jsonString()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
     public void adminCanUpdateAnotherAccount() throws Exception {
+        DocumentContext user = getAccount(userID, "user").put("$", "email", "updated@email.com");
+        String link = user.read("$._links.self.href").toString();
 
+        mockMvc.perform(patch(link)
+                .header("Authorization", "Bearer " + getTokenAdmin())
+                .content(user.jsonString()))
+                .andExpect(status().isOk());
+
+        Account updatedUser = accountRepository.findOneByName("user");
+        assertEquals("Name does not match", "user", updatedUser.getName());
+        assertEquals("Password does not match", "user", updatedUser.getPassword());
+        assertEquals("updated@email.com", updatedUser.getEmail());
     }
 
     @Test
     public void userCanDeleteOwnAccount() throws Exception {
+        String link = getAccount(userID, "user").read("$._links.self.href").toString();
+        mockMvc.perform(delete(link)
+                .header("Authorization", "Bearer " + getTokenUser()))
+                .andExpect(status().isNoContent());
 
+        assertNull(accountRepository.findOneByName("user"));
     }
 
     @Test
     public void userForbiddenDeleteAnotherAccount() throws Exception {
+        String link = getAccount(adminID, "admin").read("$._links.self.href").toString();
+        mockMvc.perform(delete(link)
+                .header("Authorization", "Bearer " + getTokenUser()))
+                .andExpect(status().isForbidden());
 
+        assertNotNull(accountRepository.findOneByName("admin"));
     }
 
     @Test
     public void adminCanDeleteAnotherAccount() throws Exception {
+        String link = getAccount(userID, "user").read("$._links.self.href").toString();
+        mockMvc.perform(delete(link)
+                .header("Authorization", "Bearer " + getTokenAdmin()))
+                .andExpect(status().isNoContent());
 
+        assertNull(accountRepository.findOneByName("user"));
     }
-
 }

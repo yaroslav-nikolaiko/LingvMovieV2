@@ -20,7 +20,7 @@ public class AccountRepositoryTest extends AbstractTest {
 
     @Test
     public void findById() throws Exception {
-        Account admin = accountRepository.findOne(1L);
+        Account admin = accountRepository.findOne(adminID);
         assertNotNull(admin);
         assertEquals("admin",admin.getName());
     }

@@ -1,7 +1,7 @@
 package lingvo.movie.security;
 
+import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.internal.filter.ValueNode;
 import lingvo.movie.AbstractTest;
 import lingvo.movie.AccountServiceApplication;
 import org.junit.Assert;
@@ -24,9 +24,9 @@ import java.util.Arrays;
 import static org.apache.tomcat.util.codec.binary.Base64.encodeBase64;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
@@ -38,6 +38,7 @@ public class AbstractSecurityTest extends AbstractTest {
     protected MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
+
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
@@ -96,6 +97,14 @@ public class AbstractSecurityTest extends AbstractTest {
     protected String getTokenUser() throws Exception {
         return getToken("user");
     }
+
+    protected DocumentContext getAccount(Long id, String username) throws Exception {
+        String json = mockMvc.perform(get("/accounts/" + id)
+                .header("Authorization", "Bearer " + getToken(username)))
+                .andReturn().getResponse().getContentAsString();
+        return JsonPath.parse(json);
+    }
+
 
     String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

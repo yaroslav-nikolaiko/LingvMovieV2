@@ -19,19 +19,4 @@ public interface AccountRepository extends SecureCrudRepository<Account> {
 
     @RestResource(exported = false)
     Account findOneByEmail(String email);
-
-
-
-    @Aspect
-    @Component
-    class AccountRepositoryInterceptor {
-        @Autowired
-        AuthorityRepository authorityRepository;
-
-        @Before("execution(* AccountRepository.save(..))")
-        public void setAuthorities(JoinPoint joinPoint) {
-            Account account = (Account) joinPoint.getArgs()[0];
-            account.setAuthorities(authorityRepository.getAuthorities("USER"));
-        }
-    }
 }

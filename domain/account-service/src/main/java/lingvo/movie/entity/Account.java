@@ -36,11 +36,17 @@ public class Account implements UserDetails {
     @Column(unique = true)
     String email;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "USER_ROLES")
+    @JsonIgnore
     List<Authority> authorities;
 
     boolean enabled = true;
+
+    @PreRemove
+    void removeAuthorities(){
+        authorities.clear();
+    }
 
     @Override
     @JsonIgnore
