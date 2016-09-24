@@ -1,13 +1,6 @@
 package lingvo.movie.entity;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_WRITE;
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
 /**
@@ -27,8 +19,6 @@ import java.util.List;
 @Table(name = "ACCOUNT")
 @Data
 @ToString(of = {"name", "email"}) @EqualsAndHashCode(of = {"name", "email"})
-//@JsonAutoDetect(fieldVisibility= ANY, getterVisibility= NONE, isGetterVisibility= NONE, setterVisibility= NONE)
-//@JsonAutoDetect(fieldVisibility= NON_PRIVATE, getterVisibility= PUBLIC_ONLY, isGetterVisibility= PUBLIC_ONLY, setterVisibility= PUBLIC_ONLY)
 public class Account implements UserDetails {
     @Id
     @GeneratedValue

@@ -79,8 +79,10 @@ public class AccountEndpointTest extends AbstractSecurityTest {
         melisandre.setName("melisandre");
         melisandre.setEmail("melisandre@gmail.com");
         melisandre.setPassword("melisandre");
+        DocumentContext json = JsonPath.parse(json(melisandre));
+        json = json.put("$","password", "melisandre");
         String location = mockMvc.perform(post("/accounts")
-                .content(json(melisandre)))
+                .content(json.jsonString()))
                 .andReturn().getResponse().getHeader("Location");
 
         mockMvc.perform(get(location)
