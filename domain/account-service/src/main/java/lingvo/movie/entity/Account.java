@@ -41,6 +41,7 @@ public class Account implements UserDetails {
     @JsonIgnore
     List<Authority> authorities;
 
+    @JsonIgnore
     boolean enabled = true;
 
     @PreRemove
