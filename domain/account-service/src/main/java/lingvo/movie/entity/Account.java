@@ -40,7 +40,7 @@ public class Account implements UserDetails {
 
     @Size(min=3, max=20)
     @Column(nullable = false)
-    private String password;
+    String password;
 
     @Pattern(regexp = "([^.@]+)(\\.[^.@]+)*@([^.@]+\\.)+([^.@]+)", message = "Email is not in valid format")
     @Column(unique = true)

@@ -1,5 +1,7 @@
 package lingvo.movie.security;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import lingvo.movie.dao.AccountRepository;
 import lingvo.movie.entity.Account;
 import org.junit.Test;
@@ -87,13 +89,14 @@ public class AccountEndpointTest extends AbstractSecurityTest {
     }
 
     @Test
-    public void passwordIsPersistedWhenCreatingAccount() throws Exception {
+    public void passwordIsPersisted() throws Exception {
         Account melisandre = new Account();
         melisandre.setName("melisandre");
         melisandre.setEmail("melisandre@gmail.com");
-        melisandre.setPassword("melisandre");
+        DocumentContext json = JsonPath.parse(json(melisandre));
+        json = json.put("$","password", "melisandre");
         mockMvc.perform(post("/accounts")
-                .content(json(melisandre)))
+                .content(json.jsonString()))
                 .andExpect(status().isCreated());
 
         Account account = accountRepository.findOneByName("melisandre");
