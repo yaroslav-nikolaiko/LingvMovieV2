@@ -13,6 +13,7 @@
         <module>account-service</module>
         <module>dictionary-service</module>
         <module>webapp</module>
+        <module>remote-player-service</module>
     </modules>
 
     <artifactId>domain</artifactId>

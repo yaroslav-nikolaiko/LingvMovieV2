@@ -175,6 +175,18 @@ service(){
     createService "$@"
 }
 
+vlc(){
+    echo -n Creating remote-player ' '
+    docker service create \
+        --name remote-player-service \
+        --replicas 1 \
+        --limit-memory ${MEMORY_LIMIT} \
+        --network ${NETWORK} \
+        --publish 8081:8080 \
+        ${IMAGE_BASE_NAME}/remote-player-service
+    postProcessor "remote-player-service $@"
+}
+
 
 # call arguments verbatim:
 "$@"

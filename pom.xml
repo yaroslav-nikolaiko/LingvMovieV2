@@ -6,6 +6,7 @@
     <modules>
         <module>infrastructure</module>
         <module>domain</module>
+        <module>external</module>
     </modules>
 
     <parent>
