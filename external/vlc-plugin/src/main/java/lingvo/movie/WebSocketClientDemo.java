@@ -36,10 +36,12 @@ public class WebSocketClientDemo {
         String url = "ws://localhost:8081/gs-guide-websocket";
         //MyStompSessionHandler sessionHandler = new MyStompSessionHandler();
 
-
-        System.out.println("Using TOKEN = "+args[0]);
         WebSocketHttpHeaders handshakeHeaders = new WebSocketHttpHeaders();
-        handshakeHeaders.add("Authorization","Bearer "+args[0]);
+        if(args.length>0){
+            System.out.println("Using TOKEN = "+args[0]);
+            handshakeHeaders.add("Authorization","Bearer "+args[0]);
+        }
+
 
         ListenableFuture<StompSession> future = stompClient.connect(url, handshakeHeaders, new StompSessionHandlerAdapter() {
             @Override

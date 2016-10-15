@@ -19,7 +19,7 @@ public class GreetingController {
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public Greeting greeting(HelloMessage message) throws Exception {
-        Thread.sleep(1000); // simulated delay
+        Thread.sleep(3000); // simulated delay
         InetAddress ip;
         String hostname;
         ip = InetAddress.getLocalHost();
@@ -31,7 +31,7 @@ public class GreetingController {
     @MessageMapping("/user/hello")
     @SendToUser("/queue/greetings")
     public Greeting usergGeeting(HelloMessage message, Principal principal) throws Exception {
-        Thread.sleep(1000); // simulated delay
+        Thread.sleep(3000); // simulated delay
         InetAddress ip;
         String hostname;
         ip = InetAddress.getLocalHost();

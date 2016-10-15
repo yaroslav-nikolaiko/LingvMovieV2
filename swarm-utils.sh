@@ -188,6 +188,20 @@ vlc(){
 }
 
 
+rabbit(){
+    echo -n Creating rabbitmq ' '
+    docker service create \
+        --name rabbitmq \
+        --replicas 1 \
+        --network ${NETWORK} \
+        --publish 15672:15672 \
+        --publish 5672:5672 \
+        --publish 61613:61613 \
+        ${IMAGE_BASE_NAME}/rabbitmq
+    postProcessor "rabbitmq $@"
+}
+
+
 # call arguments verbatim:
 "$@"
 

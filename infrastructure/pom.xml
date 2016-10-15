@@ -12,6 +12,7 @@
     <modules>
         <module>discovery</module>
         <module>api-gateway</module>
+        <module>rabbitmq</module>
     </modules>
     <artifactId>infrastructure</artifactId>
 
