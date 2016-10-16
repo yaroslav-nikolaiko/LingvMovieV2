@@ -22,7 +22,7 @@ public class AccountTokenConverter extends DefaultUserAuthenticationConverter {
     public Map<String, ?> convertUserAuthentication(Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<String, Object>();
         Account account = (Account) authentication.getPrincipal();
-        response.put(USERNAME, account.getUsername());
+        response.put(USERNAME, account.getUsername()+"-"+account.getId());
         response.put("id", account.getId());
         response.put("account", account);
         if (authentication.getAuthorities() != null && !authentication.getAuthorities().isEmpty()) {

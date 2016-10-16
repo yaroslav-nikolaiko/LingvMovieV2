@@ -43,13 +43,13 @@ public class PasswordGrantFlowTest extends AbstractSecurityTest {
     }
 
     @Test
-    public void tokenShouldContainUserName() throws Exception {
+    public void tokenShouldContainUserNameWithAppendedID() throws Exception {
         mockMvc.perform(tokenRequestAdminCred())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.access_token", matcher(item -> {
                     Object name = tokenStore.readAccessToken(item.toString()).getAdditionalInformation()
                             .get("user_name");
-                    return "admin".equals(name);
+                    return name.equals("admin-"+adminID);
                 })));
     }
 
