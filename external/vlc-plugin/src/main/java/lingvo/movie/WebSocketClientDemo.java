@@ -16,7 +16,9 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yaroslav on 10.10.16.
@@ -43,13 +45,7 @@ public class WebSocketClientDemo {
         }
 
 
-        ListenableFuture<StompSession> future = stompClient.connect(url, handshakeHeaders, new StompSessionHandlerAdapter() {
-            @Override
-            public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-                super.afterConnected(session, connectedHeaders);
-            }
-        });
-        StompSession session = future.get();
+        StringBuilder username = new StringBuilder();
 
         StompHeaders headers = new StompHeaders();
         headers.add("destination", "/app/hello");
@@ -58,6 +54,30 @@ public class WebSocketClientDemo {
         StompHeaders userHeaders = new StompHeaders();
         userHeaders.add("destination", "/app/user/hello");
         userHeaders.add("content-type", "application/json");
+
+        ListenableFuture<StompSession> future = stompClient.connect(url, handshakeHeaders, new StompSessionHandlerAdapter() {
+            @Override
+            public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+                System.out.println("**************** Connected Headers ***************");
+                for (Map.Entry<String, List<String>> entry : connectedHeaders.entrySet()) {
+                    System.out.println(entry.getKey()+" : "+entry.getValue());
+                }
+                if(connectedHeaders.containsKey("user-name")){
+                    //userHeaders.put("user-name", connectedHeaders.get("user-name"));
+                    //userHeaders.put("user-name", connectedHeaders.get("user-name"));
+                   /* List<String> destination = Collections.singletonList("/app/user/" + connectedHeaders.get("user-name").get(0) + "/user/hello");
+                    System.out.println("*** DESTINATION : "+destination.get(0));
+                    destination = Collections.singletonList("/user/admin/app/user/hello");
+                    userHeaders.replace("destination", destination);*/
+                }
+
+                    //username.append(connectedHeaders.get("user-name").get(0));
+                super.afterConnected(session, connectedHeaders);
+            }
+        });
+        StompSession session = future.get();
+
+
 
         session.subscribe("/topic/greetings", new StompFrameHandler() {
             @Override
@@ -72,7 +92,13 @@ public class WebSocketClientDemo {
             }
         });
 
-        session.subscribe("/user/queue/greetings", new StompFrameHandler() {
+        String destination = "/user/queue/greetings";
+/*        if(username.length()>0)
+            destination = "/user/" + username + "/queue/greetings";
+
+        System.out.println("User Destination = " + destination);*/
+
+        session.subscribe(destination, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
                 return Greeting.class;
