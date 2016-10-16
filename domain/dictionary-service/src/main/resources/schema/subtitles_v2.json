@@ -1,0 +1,65 @@
+{
+  "contentMediaID":1,
+  "originalLanguage": "en",
+  "wordsProcessed":{
+    "ru":true,
+    "fr":false
+  },
+  "subtitles":[
+    {
+      "lineID":1,
+      "start":"00:01:19,829",
+      "end":"00:01:21,023",
+      "text":{
+        "en":"Isn't he awesome?",
+        "ru":"Разве он не удивительный?",
+        "fr":"Est-il pas génial?"
+      },
+      "words":{
+        "he":{
+          "entries":{
+            "he":{
+              "ru":["он"],
+              "fr":["il"]
+            }
+          }
+        },
+        "awesome":{
+          "entries":{
+            "awesome":{
+              "ru":["удивительный"],
+              "fr":["génial"]
+            }
+          }
+        }
+      }
+    },
+
+    {
+      "lineID":2,
+
+
+      "words":[
+        {
+          "root":"he",
+          "entries":{
+            "he":{
+              "ru":["он"],
+              "fr":["il"]
+            }
+          }
+        },
+        {
+          "root":"awesome",
+          "entries":{
+            "awesome":{
+              "ru":["удивительный"],
+              "fr":["génial"]
+            }
+          }
+        }
+      ]
+    }
+
+  ]
+}

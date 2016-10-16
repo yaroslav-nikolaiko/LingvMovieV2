@@ -1,0 +1,25 @@
+{
+  "contentMediaID":1,
+  "subtitles":[
+    {
+      "lineID":1,
+      "start":"00:01:19,829",
+      "end":"00:01:21,023",
+      "text":{
+        "en":"Isn't he awesome?",
+        "ru":"Разве он не удивительный?",
+        "fr":"Est-il pas génial?"
+      }
+    },
+    {
+      "lineID":2,
+      "start":"00:01:16,059",
+      "end":"00:01:19,688",
+      "text":{
+        "en":"I was talking about you.",
+        "ru":"Я говорил о вас.",
+        "fr":"Je parlais de toi."
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "root": "name",
+  "category": "KNOWN",
+  "mediaItems":[
+    {
+      "id":1,
+      "words":[{
+        "name":["имя"],
+        "names":["имена"]
+      }]
+    },
+    {
+      "id":2,
+      "words":[{
+        "naming":["имя","наименование"]
+      }]
+    }
+  ]
+}

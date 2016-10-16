@@ -1,0 +1,22 @@
+{
+  "root": "name",
+  "category": "KNOWN",
+  "mediaItems":[1,2],
+  "customTranslation":{
+    "1":{
+      "12":{
+        "name":"суппер-имя"
+      },
+      "143":{
+        "names":"суппер-имя 2",
+        "name":"суппер-имя"
+      }
+    },
+
+    "mediaItemID or contentMediaID":{
+      "lineID":{
+        "entry":"custom translation"
+      }
+    }
+  }
+}

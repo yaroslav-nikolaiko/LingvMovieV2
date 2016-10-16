@@ -1,0 +1,28 @@
+{
+  "root": "name",
+  "category": "KNOWN",
+  "mediaItems":[
+    {
+      "id":1,
+      "words":{
+        "name":{
+          "lineID": 23,
+          "translation": ["имя"]
+        },
+        "names":{
+          "lineID": 143,
+          "translation": ["имена"]
+        }
+      }
+    },
+    {
+      "id":2,
+      "words":{
+        "naming":{
+          "lineID": 12,
+          "translation": ["имя","наименование"]
+        }
+      }
+    }
+  ]
+}
