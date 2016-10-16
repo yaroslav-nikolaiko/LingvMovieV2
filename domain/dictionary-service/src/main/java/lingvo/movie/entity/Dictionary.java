@@ -1,5 +1,7 @@
 package lingvo.movie.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lingvo.movie.entity.lookup.Language;
 import lingvo.movie.entity.lookup.Level;
 import lombok.Data;
@@ -23,6 +25,9 @@ import java.util.Set;
 public class Dictionary {
     @Id @GeneratedValue
     Long id;
+
+    @Column(nullable = false)
+    Long accountId;
 
     @Size(max=20)
     @Column(nullable = false)
