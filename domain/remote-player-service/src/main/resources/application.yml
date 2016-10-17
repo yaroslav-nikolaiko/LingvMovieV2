@@ -2,11 +2,20 @@ server:
   port: 8081
 
 app:
+  timeout: 30000
   service:
-    dictionary-service: http://server/api/dictionary-service
+    dictionary-service: ${CLUSTER_HOST:dictionary-service}/api/dictionary-service
 
 hystrix:
   shareSecurityContext: true
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: ${app.timeout}
+
+
 
 spring:
   rabbitmq:
@@ -16,5 +25,8 @@ spring:
 
 spring:
   profiles: docker
+
+app:
+  timeout: 3000
 server:
   port: 8080

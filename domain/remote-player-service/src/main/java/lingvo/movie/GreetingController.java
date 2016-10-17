@@ -21,9 +21,11 @@ import org.springframework.stereotype.Controller;
 import java.net.InetAddress;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static lingvo.movie.security.SecurityUtils.extractID;
 
@@ -37,7 +39,8 @@ public class GreetingController {
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public Greeting greeting(HelloMessage message, Principal principal) throws Exception {
-        Resources<Object> userDictionaries = dictionaryService.get();
+        //Resources<Object> userDictionaries = dictionaryService.get();
+        UserDictionary dictionary = dictionaryService.get(asList("en", "russian"));
         Thread.sleep(3000); // simulated delay
         InetAddress ip;
         String hostname;

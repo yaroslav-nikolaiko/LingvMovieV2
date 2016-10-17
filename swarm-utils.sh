@@ -28,6 +28,7 @@ createInfrastructure(){
     createMySqlService
     createDiscovery
     createGateway
+    rabbit
 }
 
 createAll(){

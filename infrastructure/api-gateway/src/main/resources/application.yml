@@ -10,3 +10,5 @@ zuul:
   routes:
     webapp: /**
   sensitive-headers:
+  host:
+    socket-timout-millis: 3000
