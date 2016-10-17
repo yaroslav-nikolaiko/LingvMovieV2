@@ -37,7 +37,7 @@ public class GreetingController {
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public Greeting greeting(HelloMessage message, Principal principal) throws Exception {
-        Resources<UserDictionary> userDictionaries = dictionaryService.get(extractID(principal));
+        Resources<Object> userDictionaries = dictionaryService.get();
         Thread.sleep(3000); // simulated delay
         InetAddress ip;
         String hostname;

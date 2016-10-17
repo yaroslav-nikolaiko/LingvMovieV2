@@ -9,6 +9,8 @@ import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.ExecutorChannelInterceptor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
 import java.security.Principal;
 
@@ -21,7 +23,10 @@ public class STOMPAuthenticationInterceptor extends ChannelInterceptorAdapter im
     public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
         Principal principal = StompHeaderAccessor.getUser(message.getHeaders());
         if(principal!=null){
-            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(principal, null));
+            OAuth2Authentication oauthPrincipal = (OAuth2Authentication) principal;
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, null, oauthPrincipal.getAuthorities());
+            authentication.setDetails(oauthPrincipal.getDetails());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         HystrixRequestContext.initializeContext();
         return message;

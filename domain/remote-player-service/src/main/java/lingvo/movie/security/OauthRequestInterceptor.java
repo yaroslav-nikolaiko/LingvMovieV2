@@ -21,17 +21,20 @@ import java.security.Principal;
 public class OauthRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate template) {
+        //template.header("Content-Type", "application/json");
         String token = token();
         if(token!=null)
-            template.header("Authorization", "Bearer: "+token());
+            template.header("Authorization", token());
     }
 
     private String token(){
-        /*OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) authentication.getDetails();
-        return details.getTokenValue();*/
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication!=null)
-            return "sdfsdf";
+        if(authentication != null){
+            OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) authentication.getDetails();
+            String tokenValue = details.getTokenValue();
+            String tokenType = details.getTokenType();
+            return tokenType+" "+tokenValue;
+        }
         return null;
     }
 }

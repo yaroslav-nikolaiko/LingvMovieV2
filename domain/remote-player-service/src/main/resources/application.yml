@@ -5,6 +5,9 @@ app:
   service:
     dictionary-service: http://server/api/dictionary-service
 
+hystrix:
+  shareSecurityContext: true
+
 spring:
   rabbitmq:
     host: ${CLUSTER_HOST:rabbitmq}

@@ -13,11 +13,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 /**
  * Created by yaroslav on 16.10.16.
  */
-@FeignClient(url = "http://server/api/dictionary-service",path = "/dictionaries", name = "dictionary-service")
+@FeignClient(url = "http://localhost/api/dictionary-service",path = "/dictionaries", name = "dictionary-service")
 public interface DictionaryService {
     /*@RequestMapping(value = "/dictionary-service/", method = GET)
     Resources<UserDictionary> get(List<String> languages);*/
 
     @RequestMapping(method = GET)
-    Resources<UserDictionary> get(Long id);
+    Resources<Object> get();
 }
