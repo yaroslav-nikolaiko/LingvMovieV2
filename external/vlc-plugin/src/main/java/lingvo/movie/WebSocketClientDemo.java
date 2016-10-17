@@ -35,7 +35,7 @@ public class WebSocketClientDemo {
         WebSocketStompClient stompClient = new WebSocketStompClient(webSocketClient);
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
-        String url = "ws://localhost:8081/gs-guide-websocket";
+        String url = "ws://localhost:8081/remote-player";
         //MyStompSessionHandler sessionHandler = new MyStompSessionHandler();
 
         WebSocketHttpHeaders handshakeHeaders = new WebSocketHttpHeaders();

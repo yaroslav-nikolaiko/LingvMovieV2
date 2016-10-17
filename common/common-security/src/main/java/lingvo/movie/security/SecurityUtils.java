@@ -17,4 +17,10 @@ public class SecurityUtils {
     public static Long extractID(Principal principal){
         return extractID(principal.getName());
     }
+
+    public static String extractToken(Principal principal){
+        //if(principal.getClass().equals("sdfdfg"))
+        return "sdfsdf";
+
+    }
 }

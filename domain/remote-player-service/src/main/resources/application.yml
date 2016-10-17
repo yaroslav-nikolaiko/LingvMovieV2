@@ -1,11 +1,17 @@
 server:
   port: 8081
 
+app:
+  service:
+    dictionary-service: http://server/api/dictionary-service
+
+spring:
+  rabbitmq:
+    host: ${CLUSTER_HOST:rabbitmq}
+
 ---
 
 spring:
   profiles: docker
-  rabbitmq:
-    host: rabbitmq
 server:
   port: 8080

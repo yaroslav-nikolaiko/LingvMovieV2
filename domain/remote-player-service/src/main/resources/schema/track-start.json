@@ -1,6 +1,7 @@
 {
   "hash": "1234567",
-  "audio_lang": ["eng", "ru"],
+  "size": "894539486436",
+  "audioLanguages": ["eng", "ru"],
   "subtitles_lang": ["eng", "ru"],
   "meta":{
     "episodeNumber": "07",
